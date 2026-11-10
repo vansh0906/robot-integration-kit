@@ -1,0 +1,32 @@
+# Example partner profile (fictional): an indoor delivery cart on mecanum wheels.
+partner: "Partner C (example): office delivery cart, mecanum"
+platform:
+  type: mecanum
+  wheel_radius: 0.05
+  wheel_base: 0.36
+  track_width: 0.34
+  max_wheel_speed: 20.0
+  max_wheel_accel: 30.0
+  max_speed: 0.8
+  max_yaw_rate: 1.5
+  decel: 1.0
+  footprint: {length: 0.50, width: 0.42}
+sensors:
+  lidar: {x: 0.20, y: 0.0, range: 10.0, fov_deg: 360, beams: 360, noise: 0.02, rate: 10}
+  imu: {gyro_noise: 0.003, gyro_bias: 0.002}
+  encoders: {noise: 0.02}
+navigation:
+  inflation: 0.15                # was 0.12 (lint CFG034)
+  lookahead: 0.5
+  goal_tolerance: 0.12
+  stop_margin: 0.30
+sites: [narrow_corridor]
+conditions: [nominal, glass_walls, low_friction, popup_obstacle, estop, cmd_loss]
+acceptance:
+  mission_success_rate: 0.95
+  position_error_p95: 0.10
+  min_clearance: 0.08
+  estop_stop_distance: 0.50
+  watchdog_stop_time: 1.20         # revised: 0.60 was physically impossible (lint CFG032)
+  popup_min_gap: 0.20
+  missions_per_site: 8

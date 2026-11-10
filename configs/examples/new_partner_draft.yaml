@@ -1,0 +1,24 @@
+# A first draft as a partner might send it: every mistake here is one the linter catches.
+partner: "New partner draft (example): delivery robot"
+platform:
+  type: diff_drive
+  wheel_radius: 80            # mm instead of m
+  track_width: 0.5
+  max_wheel_speed: 30
+  max_wheel_accel: 20
+  max_speed: 2.5
+  max_yaw_rate: 1.5
+  decel: 0.8
+  footprint: {length: 0.8, width: 0.6}
+sensors:
+  lidar: {x: 0.6, y: 0.0, range: 4.0, fov_deg: 120, beams: 121, rate: 5}
+  imu: {}
+navigation: {inflation: 0.05, stop_margin: 0.3}
+sites: [warehouse_aisles, loading_dock]
+conditions: [nominal]
+acceptance:
+  mission_success_rate: 95
+  position_error_p95: 0.10
+  min_clearance: 0.10
+  estop_stop_distance: 0.5
+  watchdog_stop_time: 0.5

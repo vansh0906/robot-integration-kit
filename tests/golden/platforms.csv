@@ -1,0 +1,4 @@
+config,kind,wheel_radius,track_width,wheel_base,max_wheel_speed,max_steer_deg,max_speed,max_yaw_rate
+partner_a_warehouse_amr,diff_drive,0.08,0.46,0,20.0,0,1.4,1.6
+partner_b_yard_tug,ackermann,0.2,0,1.2,12.0,32,2.0,1.0
+partner_c_mecanum_cart,mecanum,0.05,0.34,0.36,20.0,0,0.8,1.5

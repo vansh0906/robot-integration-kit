@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rik"
+version = "0.1.0"
+description = "Robot integration kit: partner platform configs, lint, navigation stack and qualification"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "scipy>=1.10", "pyyaml>=6", "matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["rik"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

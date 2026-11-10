@@ -1,0 +1,31 @@
+# Example partner profile (fictional): a warehouse AMR integrator.
+partner: "Partner A (example): warehouse AMR, differential drive"
+platform:
+  type: diff_drive
+  wheel_radius: 0.08          # m
+  track_width: 0.46           # m, wheel centre to wheel centre
+  max_wheel_speed: 20.0       # rad/s at the wheel
+  max_wheel_accel: 25.0       # rad/s^2
+  max_speed: 1.4              # m/s
+  max_yaw_rate: 1.6           # rad/s
+  decel: 1.2                  # m/s^2, rated braking
+  footprint: {length: 0.70, width: 0.56}
+sensors:
+  lidar: {x: 0.30, y: 0.0, range: 12.0, fov_deg: 270, beams: 271, noise: 0.02, rate: 10}
+  imu: {gyro_noise: 0.003, gyro_bias: 0.002}
+  encoders: {noise: 0.01}
+navigation:
+  inflation: 0.15
+  lookahead: 0.6
+  goal_tolerance: 0.15
+  stop_margin: 0.35
+sites: [warehouse_aisles]
+conditions: [nominal, low_friction, popup_obstacle, estop, cmd_loss]
+acceptance:
+  mission_success_rate: 0.95
+  position_error_p95: 0.10
+  min_clearance: 0.10
+  estop_stop_distance: 0.80
+  watchdog_stop_time: 1.60         # revised: 0.60 was physically impossible (lint CFG032)
+  popup_min_gap: 0.25
+  missions_per_site: 10

@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  qualification:
+    name: Lint, tests, qualification (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -r requirements.txt
+      - name: Lint partner configs
+        run: python tools/lint_config.py
+      - name: Unit, mission and ROS-node (stubbed) tests
+        run: pytest -q tests --junitxml=pytest-junit.xml
+      - name: Qualify every partner (148 missions)
+        run: python tools/qualify.py --all --jobs 4
+      - name: Summary
+        if: always()
+        run: cat results/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qualification-reports-py${{ matrix.python }}
+          path: results/
+
+  cpp:
+    name: C++17 kinematics library (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S cpp -B build -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
+
+  ros2:
+    name: ROS 2 Jazzy base driver
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            python3-numpy python3-scipy python3-yaml python3-pytest python3-colcon-common-extensions \
+            ros-jazzy-launch-testing ros-jazzy-launch-testing-ros
+      - name: colcon build
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          cd ros2_ws && colcon build --event-handlers console_direct+
+      - name: launch_testing (drive, watchdog, E-stop latch)
+        timeout-minutes: 5
+        run: |
+          source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash
+          export PYTHONPATH=$GITHUB_WORKSPACE:$PYTHONPATH
+          launch_test ros2_ws/src/rik_ros/test/test_base_driver_launch.py
